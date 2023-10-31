@@ -23,7 +23,7 @@ app.use(appRouter);
 
 app.use((req, res) => {
   res.status(404).send({
-    message: 'wrong path',
+    message: 'Указан неверный адрес',
   });
 });
 
