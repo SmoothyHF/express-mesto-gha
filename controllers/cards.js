@@ -9,23 +9,23 @@ const createCard = (req, res) => {
     .then((card) => res.status(201).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: err.message });
+        return res.status(400).send({ message: 'Переданы некорректные данные при создании карточки.' });
       }
-      return res.status(500).send({ message: 'Server Error' });
+      return res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
 const getCards = (req, res) => {
   CardModel.find()
     .then((cards) => res.status(200).send(cards))
-    .catch(() => res.status(500).send({ message: 'Server Error' }));
+    .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка' }));
 };
 
 const deleteCards = (req, res) => {
   CardModel.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: 'Card not found' });
+        return res.status(404).send({ message: 'Карточка с указанным id не найдена.' });
       }
       return res.status(200).send(card);
     })
@@ -33,7 +33,7 @@ const deleteCards = (req, res) => {
       if (err.name) {
         return res.status(400).send({ message: 'invalid ID' });
       }
-      return res.status(500).send({ message: 'Server Error' });
+      return res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
@@ -46,18 +46,18 @@ const likeCard = (req, res) => {
     // eslint-disable-next-line consistent-return
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: 'invalid ID' });
+        return res.status(404).send({ message: 'Передан несуществующий id карточки.' });
       }
       res.status(200).send(card);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(404).send({ message: err.message });
-      }
+      // if (err.name === 'ValidationError') {
+      //   return res.status(404).send({ message: '' });
+      // }
       if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Invalid ID' });
+        return res.status(400).send({ message: 'Переданы некорректные данные для постановки лайка.' });
       }
-      return res.status(500).send({ message: 'Server Error' });
+      return res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
@@ -70,18 +70,18 @@ const disLikeCard = (req, res) => {
     // eslint-disable-next-line consistent-return
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: 'invalid ID' });
+        return res.status(404).send({ message: 'Передан несуществующий id карточки.' });
       }
       res.status(200).send(card);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(404).send({ message: err.message });
-      }
+      // if (err.name === 'ValidationError') {
+      //   return res.status(404).send({ message: err.message });
+      // }
       if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Invalid ID' });
+        return res.status(400).send({ message: 'Переданы некорректные данные для снятия лайка.' });
       }
-      return res.status(500).send({ message: 'Server Error' });
+      return res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
 };
 

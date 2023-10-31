@@ -7,16 +7,16 @@ const createUser = (req, res) => {
     .then((data) => res.status(201).send(data))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: err.message });
+        return res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
       }
-      return res.status(500).send({ message: 'Server Error' });
+      return res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
 const getUsers = (req, res) => {
   UserModel.find()
     .then((users) => res.status(200).send(users))
-    .catch(() => res.status(500).send({ message: 'Server Error' }));
+    .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка' }));
 };
 
 const getUserById = (req, res) => {
@@ -25,15 +25,16 @@ const getUserById = (req, res) => {
   UserModel.findById(id)
     .then((user) => {
       if (!user) {
-        return res.status(404).send({ message: 'User not found' });
+        return res.status(404).send({ message: 'Пользователь по указанному id не найден.' });
       }
       return res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Invalid ID' });
+        // eslint-disable-next-line max-len
+        return res.status(400).send({ message: 'Передан несуществующий id.' });
       }
-      return res.status(500).send({ message: 'Server Error' });
+      return res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
@@ -44,15 +45,15 @@ const updateUserProfile = (req, res) => {
   })
     .then((user) => {
       if (!user) {
-        return res.status(404).send({ message: 'User not found' });
+        return res.status(404).send({ message: 'Пользователь с указанным id не найден.' });
       }
       return res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: 'Invalid data' });
+        return res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
       }
-      return res.status(500).send({ message: 'Server Error' });
+      return res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
@@ -67,15 +68,15 @@ const updateUserAvatar = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        return res.status(404).send({ message: 'User not found' });
+        return res.status(404).send({ message: 'Пользователь с указанным id не найден.' });
       }
       return res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: 'Invalid data' });
+        return res.status(400).send({ message: 'Переданы некорректные данные при обновлении аватара.' });
       }
-      return res.status(500).send({ message: 'Server Error' });
+      return res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
