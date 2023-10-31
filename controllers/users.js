@@ -59,7 +59,7 @@ const updateUserProfile = (req, res) => {
 const updateUserAvatar = (req, res) => {
   UserModel.findByIdAndUpdate(
     req.user._id,
-    { avatar: 'dd' },
+    req.body,
     {
       new: true,
       runValidators: true,

@@ -29,7 +29,12 @@ const deleteCards = (req, res) => {
       }
       return res.status(200).send(card);
     })
-    .catch(() => res.status(500).send({ message: 'Server Error' }));
+    .catch((err) => {
+      if (err.name) {
+        return res.status(400).send({ message: 'invalid ID' });
+      }
+      return res.status(500).send({ message: 'Server Error' });
+    });
 };
 
 const likeCard = (req, res) => {
@@ -38,13 +43,19 @@ const likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => res.status(200).send(card))
+    // eslint-disable-next-line consistent-return
+    .then((card) => {
+      if (!card) {
+        return res.status(404).send({ message: 'invalid ID' });
+      }
+      res.status(200).send(card);
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: err.message });
+        return res.status(404).send({ message: err.message });
       }
       if (err.name === 'CastError') {
-        return res.status(404).send({ message: 'Invalid ID' });
+        return res.status(400).send({ message: 'Invalid ID' });
       }
       return res.status(500).send({ message: 'Server Error' });
     });
@@ -56,13 +67,19 @@ const disLikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => res.status(200).send(card))
+    // eslint-disable-next-line consistent-return
+    .then((card) => {
+      if (!card) {
+        return res.status(404).send({ message: 'invalid ID' });
+      }
+      res.status(200).send(card);
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: err.message });
+        return res.status(404).send({ message: err.message });
       }
       if (err.name === 'CastError') {
-        return res.status(404).send({ message: 'Invalid ID' });
+        return res.status(400).send({ message: 'Invalid ID' });
       }
       return res.status(500).send({ message: 'Server Error' });
     });
