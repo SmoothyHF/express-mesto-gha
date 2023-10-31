@@ -38,14 +38,10 @@ const getUserById = (req, res) => {
 };
 
 const updateUserProfile = (req, res) => {
-  UserModel.findByIdAndUpdate(
-    req.user._id,
-    { name: 'test', about: 'sfs' },
-    {
-      new: true,
-      runValidators: true,
-    },
-  )
+  UserModel.findByIdAndUpdate(req.user._id, req.body, {
+    new: true,
+    runValidators: true,
+  })
     .then((user) => {
       if (!user) {
         return res.status(404).send({ message: 'User not found' });
