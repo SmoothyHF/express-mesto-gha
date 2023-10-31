@@ -21,4 +21,10 @@ app.use((req, res, next) => {
 
 app.use(appRouter);
 
+app.use((req, res) => {
+  res.status(404).send({
+    message: 'wrong path',
+  });
+});
+
 app.listen(port);
