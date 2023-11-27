@@ -2,6 +2,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const appRouter = require('./routes/index');
 
+const auth = require('./middlewares/auth');
+const { login, createUser } = require('./controllers/users');
+
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   useNewUrlParser: true,
 }).then();
@@ -11,13 +14,10 @@ const port = 3000;
 
 app.use(express.json());
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '653fb185afd584e777ec4d99',
-  };
+app.post('/signup', createUser);
+app.post('/signin', login);
 
-  next();
-});
+app.use(auth);
 
 app.use(appRouter);
 
