@@ -22,7 +22,6 @@ const createUser = (req, res, next) => {
   } = req.body;
 
   if (!email || !password) {
-    // return res.status(400).send({ message: 'Email или пароль не могут быть пустыми' });
     return next(new BadRequestError('Email или пароль не могут быть пустыми'));
   }
 
@@ -43,14 +42,11 @@ const createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.code === 11000) {
-        // return res.status(409).send({ message: 'Такой email уже зарегестрирован' });
         return next(new ConflictError('Такой email уже зарегестрирован'));
       }
       if (err.name === 'ValidationError') {
-        // return res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
         return next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
       }
-      // return res.status(500).send({ message: 'На сервере произошла ошибка' });
       next();
     });
 };
@@ -59,69 +55,56 @@ const login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    // return res.status(400).send({ message: 'Email или пароль не могут быть пустыми' });
     return next(new BadRequestError('Email или пароль не могут быть пустыми'));
   }
 
   return UserModel.findUserByCredentials(email, password)
     .then((user) => {
       if (!user) {
-        // return res.status(403).send({ message: 'Такого пользователя не существует' });
         return next(new ForbiddenError('Такого пользователя не существует'));
       }
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
       return res.status(200).send({ token });
     })
-    // .catch(() => { res.status(500).send({ message: 'На сервере произошла ошибка' });});
     .catch(next);
 };
 
 const getUsers = (req, res, next) => {
   UserModel.find()
     .then((users) => res.status(200).send(users))
-    // .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка' }));
     .catch(next);
 };
 
 const getUserById = (req, res, next) => {
-  // console.log(req.user._id);
-
   const id = req.params.userId;
 
   UserModel.findById(id)
     .then((user) => {
       if (!user) {
-        // return res.status(404).send({ message: 'Пользователь по указанному id не найден.' });
         return next(new NotFoundError('Пользователь по указанному id не найден.'));
       }
       return res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        // return res.status(400).send({ message: 'Передан несуществующий id.' });
         return next(new BadRequestError('Передан несуществующий id.'));
       }
-      // return res.status(500).send({ message: 'На сервере произошла ошибка' });
       next();
     });
 };
 
 const getCurrentUser = (req, res, next) => {
-  // console.log(req.user._id);
   UserModel.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        // return res.status(404).send({ message: 'Пользователь по указанному id не найден.' });
         return next(new NotFoundError('Пользователь по указанному id не найден.'));
       }
       return res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        // return res.status(400).send({ message: 'Передан несуществующий id.' });
         return next(new BadRequestError('Передан несуществующий id.'));
       }
-      // return res.status(500).send({ message: 'На сервере произошла ошибка' });
       next();
     });
 };
@@ -133,17 +116,14 @@ const updateUserProfile = (req, res, next) => {
   })
     .then((user) => {
       if (!user) {
-        // return res.status(404).send({ message: 'Пользователь с указанным id не найден.' });
         return next(new NotFoundError('Пользователь с указанным id не найден.'));
       }
       return res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        // return res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
         return next(new BadRequestError('Переданы некорректные данные при обновлении профиля.'));
       }
-      // return res.status(500).send({ message: 'На сервере произошла ошибка' });
       next();
     });
 };
@@ -159,32 +139,17 @@ const updateUserAvatar = (req, res, next) => {
   )
     .then((user) => {
       if (!user) {
-        // return res.status(404).send({ message: 'Пользователь с указанным id не найден.' });
         return next(new NotFoundError('Пользователь с указанным id не найден.'));
       }
       return res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        // return res.status(400).send({ message: 'Переданы некорректные данные при обновлении аватара.' });
         return next(new BadRequestError('Переданы некорректные данные при обновлении аватара.'));
       }
-      // return res.status(500).send({ message: 'На сервере произошла ошибка' });
       next();
     });
 };
-
-// const register = (req, res) => {
-//   const { email, password } = req.body;
-
-//   if (!email || !password) {
-//     return res.status(400).send({ message: 'Email или пароль не могут быть пустыми' });
-//   }
-
-//   UserModel.create({ email, password })
-//     .then((user) => res.status(200).send(user))
-//     .catch(() => res.status(500).send({ message: 'Ошибка сервера' }));
-// };
 
 module.exports = {
   createUser,
@@ -194,5 +159,4 @@ module.exports = {
   updateUserProfile,
   updateUserAvatar,
   login,
-  // register,
 };
