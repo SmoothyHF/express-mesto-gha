@@ -4,6 +4,7 @@ const appRouter = require('./routes/index');
 
 const auth = require('./middlewares/auth');
 const { login, createUser } = require('./controllers/users');
+const errorHandler = require('./middlewares/error-handler');
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   useNewUrlParser: true,
@@ -26,5 +27,7 @@ app.use((req, res) => {
     message: 'Указан неверный адрес',
   });
 });
+
+app.use(errorHandler);
 
 app.listen(port);
