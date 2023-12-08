@@ -1,7 +1,6 @@
-/* eslint-disable import/no-extraneous-dependencies */
 const express = require('express');
 const mongoose = require('mongoose');
-const { celebrate, joi } = require('celebrate');
+const { celebrate, Joi, errors } = require('celebrate');
 
 const appRouter = require('./routes/index');
 const auth = require('./middlewares/auth');
@@ -18,18 +17,19 @@ const port = 3000;
 app.use(express.json());
 
 app.post('/signup', celebrate({
-  body: joi.object().keys({
-    name: joi.string().min(2).max(30),
-    about: joi.string().min(2).max(30),
-    avatar: joi.string().url().regex(/^https?:\/\/(www\.)?([a-z0-9]{1}[a-z0-9-]*\.?)*\.{1}[a-z0-9-]{2,8}(\/([\w#!:.?+=&%@!\-/])*)?/),
-    email: joi.string().required().email(),
-    password: joi.string().required(),
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().uri().regex(/^https?:\/\/(www\.)?([a-z0-9]{1}[a-z0-9-]*\.?)*\.{1}[a-z0-9-]{2,8}(\/([\w#!:.?+=&%@!\-/])*)?/),
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
   }),
 }), createUser);
+
 app.post('/signin', celebrate({
-  body: joi.object().keys({
-    email: joi.string().required().email(),
-    password: joi.string().required(),
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
   }),
 }), login);
 
@@ -42,6 +42,8 @@ app.use((req, res) => {
     message: 'Указан неверный адрес',
   });
 });
+
+app.use(errors());
 
 app.use(errorHandler);
 
