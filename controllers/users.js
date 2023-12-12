@@ -45,6 +45,7 @@ const createUser = (req, res, next) => {
         return next(new ConflictError('Такой email уже зарегестрирован'));
       }
       if (err.name === 'ValidationError') {
+        console.log(err);
         return next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
       }
       next();
