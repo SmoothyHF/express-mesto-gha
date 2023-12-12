@@ -30,10 +30,10 @@ const deleteCards = (req, res, next) => {
   CardModel.findById(req.params.cardId)
     .then((card) => {
       if (req.user._id !== card.owner.toString()) {
-        throw new ForbiddenError('Нельзя удалять чужие карточки');
+        return next(new ForbiddenError('Нельзя удалять чужие карточки'));
       }
-    });
-  CardModel.findByIdAndRemove(req.params.cardId)
+    })
+    .then(() => CardModel.findByIdAndRemove(req.params.cardId))
     .then((card) => {
       if (!card) {
         return next(new NotFoundError('Карточка с указанным id не найдена.'));
