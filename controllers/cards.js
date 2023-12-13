@@ -26,41 +26,22 @@ const getCards = (req, res, next) => {
     .catch(next);
 };
 
-// const deleteCards = (req, res, next) => {
-//   CardModel.findById(req.params.cardId)
-//     .then((card) => {
-//       if (req.user._id !== card.owner.toString()) {
-//         return next(new ForbiddenError('Нельзя удалять чужие карточки'));
-//       }
-//       return card;
-//     });
-//   CardModel.findByIdAndRemove(req.params.card._id)
-//     .then((card) => {
-//       if (!card) {
-//         return next(new NotFoundError('Карточка с указанным id не найдена.'));
-//       }
-//       return res.status(200).send(card);
-//     })
-//     .catch((err) => {
-//       if (err.name) {
-//         // console.log(err.name);
-//         return next(new BadRequestError('Переданы некорректные данные для удаления карточки'));
-//       }
-//       next();
-//     });
-// };
-
 const deleteCards = (req, res, next) => {
   CardModel.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
         return next(new NotFoundError('Карточка с указанным id не найдена.'));
       }
+      return card;
+    })
+    .then((card) => {
       if (req.user._id === card.owner.toString()) {
-        CardModel.findByIdAndRemove(req.params.cardId);
-        return res.status(200).send(card);
+        CardModel.findByIdAndDelete(req.params.cardId)
+          .then((card) => res.status(200).send(card));
+        // return res.status(200).send(card);
+      } else {
+        return next(new ForbiddenError('Нельзя удалять чужие карточки'));
       }
-      return next(new ForbiddenError('Нельзя удалять чужие карточки'));
     })
     .catch((err) => {
       if (err.name) {
