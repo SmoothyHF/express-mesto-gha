@@ -39,8 +39,6 @@ const deleteCards = (req, res, next) => {
         CardModel.findByIdAndDelete(req.params.cardId)
           .then((card) => res.status(200).send(card))
           .catch(next);
-
-        // return res.status(200).send(card);
       } else {
         return next(new ForbiddenError('Нельзя удалять чужие карточки'));
       }
@@ -59,7 +57,6 @@ const likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    // eslint-disable-next-line consistent-return
     .then((card) => {
       if (!card) {
         return next(new NotFoundError('Передан несуществующий id карточки.'));
@@ -80,7 +77,6 @@ const disLikeCard = (req, res, next) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    // eslint-disable-next-line consistent-return
     .then((card) => {
       if (!card) {
         return next(new NotFoundError('Передан несуществующий id карточки.'));

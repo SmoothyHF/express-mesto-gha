@@ -46,15 +46,8 @@ const createUser = (req, res, next) => {
 const login = (req, res, next) => {
   const { email, password } = req.body;
 
-  // if (!email || !password) {
-  //   return next(new BadRequestError('Email или пароль не могут быть пустыми'));
-  // }
-
   return UserModel.findUserByCredentials(email, password)
     .then((user) => {
-      // if (!user) {
-      //   return next(new ForbiddenError('Такого пользователя не существует'));
-      // }
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
       return res.status(200).send({ token });
     })

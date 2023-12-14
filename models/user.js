@@ -1,4 +1,4 @@
-/* eslint-disable consistent-return */
+/* eslint-disable func-names */
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
