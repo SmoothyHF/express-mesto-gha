@@ -6,12 +6,6 @@ const { JWT_SECRET = 'SECRET_KEY' } = process.env;
 
 const UnauthorizedError = require('../errors/unauthorized-error');
 
-// const authError = (res) => {
-//   res
-//     .status(401)
-//     .send({ message: 'Необходима авторизация' });
-// };
-
 const authError = (next) => {
   next(new UnauthorizedError('Необходима авторизация'));
 };

@@ -6,6 +6,7 @@ const appRouter = require('./routes/index');
 const auth = require('./middlewares/auth');
 const { login, createUser } = require('./controllers/users');
 const errorHandler = require('./middlewares/error-handler');
+const NotFoundError = require('./errors/notFound-error');
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   useNewUrlParser: true,
@@ -37,11 +38,7 @@ app.use(auth);
 
 app.use(appRouter);
 
-app.use((req, res) => {
-  res.status(404).send({
-    message: 'Указан неверный адрес',
-  });
-});
+app.use((req, res, next) => next(new NotFoundError('Указан неверный адрес')));
 
 app.use(errors());
 

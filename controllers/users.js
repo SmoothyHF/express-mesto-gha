@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable object-shorthand */
 /* eslint-disable arrow-parens */
@@ -10,9 +9,6 @@ const UserModel = require('../models/user');
 const BadRequestError = require('../errors/badRequest-error');
 const NotFoundError = require('../errors/notFound-error');
 const ConflictError = require('../errors/conflict-error');
-const ForbiddenError = require('../errors/Forbidden-error');
-
-// const user = require('../models/user');
 
 const { JWT_SECRET = 'SECRET_KEY' } = process.env;
 
@@ -20,10 +16,6 @@ const createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-
-  if (!email || !password) {
-    return next(new BadRequestError('Email или пароль не могут быть пустыми'));
-  }
 
   bcrypt.hash(password, 10)
     .then((hash) => UserModel.create({
@@ -47,22 +39,22 @@ const createUser = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
       }
-      next();
+      next(err);
     });
 };
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
-    return next(new BadRequestError('Email или пароль не могут быть пустыми'));
-  }
+  // if (!email || !password) {
+  //   return next(new BadRequestError('Email или пароль не могут быть пустыми'));
+  // }
 
   return UserModel.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user) {
-        return next(new ForbiddenError('Такого пользователя не существует'));
-      }
+      // if (!user) {
+      //   return next(new ForbiddenError('Такого пользователя не существует'));
+      // }
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
       return res.status(200).send({ token });
     })
@@ -89,65 +81,50 @@ const getUserById = (req, res, next) => {
       if (err.name === 'CastError') {
         return next(new BadRequestError('Передан несуществующий id.'));
       }
-      next();
+      next(err);
     });
 };
 
 const getCurrentUser = (req, res, next) => {
   UserModel.findById(req.user._id)
-    .then((user) => {
-      if (!user) {
-        return next(new NotFoundError('Пользователь по указанному id не найден.'));
-      }
-      return res.status(200).send(user);
-    })
+    .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
         return next(new BadRequestError('Передан несуществующий id.'));
       }
-      next();
+      next(err);
     });
 };
 
 const updateUserProfile = (req, res, next) => {
-  UserModel.findByIdAndUpdate(req.user._id, req.body, {
-    new: true,
-    runValidators: true,
-  })
-    .then((user) => {
-      if (!user) {
-        return next(new NotFoundError('Пользователь с указанным id не найден.'));
-      }
-      return res.status(200).send(user);
-    })
+  const { name, about } = req.body;
+  UserModel.findByIdAndUpdate(
+    req.user._id,
+    { name, about },
+    { new: true, runValidators: true },
+  )
+    .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequestError('Переданы некорректные данные при обновлении профиля.'));
       }
-      next();
+      next(err);
     });
 };
 
 const updateUserAvatar = (req, res, next) => {
+  const { avatar } = req.body;
   UserModel.findByIdAndUpdate(
     req.user._id,
-    req.body,
-    {
-      new: true,
-      runValidators: true,
-    },
+    { avatar },
+    { new: true, runValidators: true },
   )
-    .then((user) => {
-      if (!user) {
-        return next(new NotFoundError('Пользователь с указанным id не найден.'));
-      }
-      return res.status(200).send(user);
-    })
+    .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequestError('Переданы некорректные данные при обновлении аватара.'));
       }
-      next();
+      next(err);
     });
 };
 
