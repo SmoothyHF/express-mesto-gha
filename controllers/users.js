@@ -1,8 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable object-shorthand */
-/* eslint-disable arrow-parens */
-/* eslint-disable consistent-return */
-/* eslint-disable no-shadow */
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const UserModel = require('../models/user');
@@ -25,11 +20,9 @@ const createUser = (req, res, next) => {
       email,
       password: hash,
     }))
-    .then(({
-      name, about, avatar, email,
-    }) => {
+    .then((user) => {
       res.status(201).send({
-        name: name, about: about, avatar: avatar, email: email,
+        name: user.name, about: user.about, avatar: user.avatar, email: user.email,
       });
     })
     .catch((err) => {
@@ -39,7 +32,7 @@ const createUser = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -74,7 +67,7 @@ const getUserById = (req, res, next) => {
       if (err.name === 'CastError') {
         return next(new BadRequestError('Передан несуществующий id.'));
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -85,7 +78,7 @@ const getCurrentUser = (req, res, next) => {
       if (err.name === 'CastError') {
         return next(new BadRequestError('Передан несуществующий id.'));
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -101,7 +94,7 @@ const updateUserProfile = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequestError('Переданы некорректные данные при обновлении профиля.'));
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -117,7 +110,7 @@ const updateUserAvatar = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequestError('Переданы некорректные данные при обновлении аватара.'));
       }
-      next(err);
+      return next(err);
     });
 };
 

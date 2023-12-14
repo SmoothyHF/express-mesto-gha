@@ -1,5 +1,3 @@
-/* eslint-disable consistent-return */
-// eslint-disable-next-line import/no-extraneous-dependencies
 const jwt = require('jsonwebtoken');
 
 const { JWT_SECRET = 'SECRET_KEY' } = process.env;
@@ -28,5 +26,5 @@ module.exports = (req, res, next) => {
 
   req.user = payload;
 
-  next();
+  return next();
 };
